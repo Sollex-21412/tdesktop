@@ -20,7 +20,9 @@ Copyright (c) 2014 John Preston, https://desktop.telegram.org
 
 #include "lang.h"
 
+#if 0
 #include <private/qharfbuzz_p.h>
+#endif
 
 namespace {
 
@@ -43,10 +45,11 @@ namespace {
 	inline int32 _blockHeight(const ITextBlock *b, const style::font &font) {
 		return (b->type() == TextBlockSkip) ? static_cast<const SkipBlock*>(b)->height() : (_textStyle->lineHeight > font->height) ? _textStyle->lineHeight : font->height;
 	}
-
+#if 0
 	inline QFixed _blockRBearing(const ITextBlock *b) {
 		return (b->type() == TextBlockText) ? static_cast<const TextBlock*>(b)->f_rbearing() : 0;
 	}
+#endif
 }
 
 const QRegularExpression &reDomain() {
@@ -269,10 +272,12 @@ public:
 	}
 
 	void blockCreated() {
+#if 0
 		sumWidth += _t->_blocks.back()->f_width();
 		if (sumWidth.floor().toInt() > stopAfterWidth) {
 			sumFinished = true;
 		}
+#endif
 	}
 
 	void createBlock(int32 skipBack = 0) {
@@ -287,7 +292,9 @@ public:
 			} else if (len == 1 && _t->_text.at(blockStart) == QChar::LineFeed) {
 				_t->_blocks.push_back(new NewlineBlock(_t->_font, _t->_text, blockStart, len));
 			} else {
+#if 0
 				_t->_blocks.push_back(new TextBlock(_t->_font, _t->_text, _t->_minResizeWidth, blockStart, len, flags, color, lnkIndex));
+#endif
 			}
 			blockStart += len;
 			blockCreated();
@@ -511,12 +518,18 @@ public:
 		emoji = e;
 	}
 
-	TextParser(Text *t, const QString &text, const TextParseOptions &options) : _t(t), src(text),
-		rich(options.flags & TextParseRichText), multiline(options.flags & TextParseMultiline), maxLnkIndex(0), flags(0), lnkIndex(0), stopAfterWidth(QFIXED_MAX) {
+    TextParser(Text *t, const QString &text, const TextParseOptions &options)
+        : _t(t), src(text)
+#if 0
+        , rich(options.flags & TextParseRichText), multiline(options.flags & TextParseMultiline), maxLnkIndex(0), flags(0), lnkIndex(0), stopAfterWidth(QFIXED_MAX)
+#endif
+    {
 		int flags = options.flags;
+#if 0
 		if (options.maxw > 0 && options.maxh > 0) {
 			stopAfterWidth = ((options.maxh / _t->_font->height) + 1) * options.maxw;
 		}
+#endif
 
 		start = src.constData();
 		end = start + src.size();
@@ -536,7 +549,9 @@ public:
 		_t->_text.reserve(end - start);
 
 		diacs = 0;
+#if 0
 		sumWidth = 0;
+#endif
 		sumFinished = false;
 		blockStart = 0;
 		emoji = 0;
@@ -625,7 +640,9 @@ private:
 	const EmojiData *emoji; // current emoji, if current word is an emoji, or zero
 	int32 blockStart; // offset in result, from which current parsed block is started
 	int32 diacs; // diac chars skipped without good char
+#if 0
 	QFixed sumWidth, stopAfterWidth; // summary width of all added words
+#endif
 	bool sumFinished;
 	style::color color; // current color, could be invalid
 
@@ -700,6 +717,7 @@ namespace {
 		bool override;
 	};
 
+#if 0
 	static void eAppendItems(QScriptAnalysis *analysis, int &start, int &stop, const BidiControl &control, QChar::Direction dir) {
 		if (start > stop)
 			return;
@@ -728,7 +746,7 @@ namespace {
 		++stop;
 		start = stop;
 	}
-
+#endif
 }
 
 void TextLink::onClick(Qt::MouseButton button) const {
@@ -791,12 +809,15 @@ public:
 			}
 			_parLength = ((i == e) ? _t->_text.size() : (*i)->from()) - _parStart;
 		}
+#if 0
 		_parAnalysis.resize(0);
+#endif
 	}
 
 	void initParagraphBidi() {
+#if 0
 		if (!_parLength || !_parAnalysis.isEmpty()) return;
-		
+#endif
 		Text::TextBlocks::const_iterator i = _parStartBlock, e = _t->_blocks.cend(), n = i + 1;
 
 		bool ignore = false;
@@ -818,12 +839,12 @@ public:
 				++curr;
 			}
 		}
-
+#if 0
 		_parAnalysis.resize(_parLength);
 		QScriptAnalysis *analysis = _parAnalysis.data();
-
+#endif
 		BidiControl control(rtl);
-
+#if 0
 		_parHasBidi = false;
 		if (ignore) {
 			memset(analysis, 0, _parLength * sizeof(QScriptAnalysis));
@@ -835,6 +856,7 @@ public:
 		} else {
 			_parHasBidi = eBidiItemize(analysis, control);
 		}
+#endif
 	}
 
 	void draw(int32 left, int32 top, int32 w, style::align align, int32 yFrom, int32 yTo, uint16 selectedFrom = 0, uint16 selectedTo = 0) {
@@ -847,7 +869,7 @@ public:
 			_p->setFont(_t->_font->f);
 			_originalPen = _p->pen();
 		}
-
+#if 0
 		_x = left;
 		_y = top;
 		_yFrom = yFrom + top;
@@ -856,7 +878,7 @@ public:
 		_selectedTo = selectedTo;
 		_wLeft = _w = w;
 		_str = _t->_text.unicode();
-
+#endif
 		if (_p) {
 			QRectF clip = _p->clipBoundingRect();
 			if (clip.width() > 0 || clip.height() > 0) {
@@ -878,6 +900,7 @@ public:
 
 		_lineHeight = 0;
 		_fontHeight = _t->_font->height;
+#if 0
 		QFixed last_rBearing = 0, last_rPadding = 0;
 
 		int32 blockIndex = 0;
@@ -1015,6 +1038,7 @@ public:
 			*_getSymbolAfter = false;
 			*_getSymbolUpon = false;
 		}
+#endif
 	}
 
 	void drawElided(int32 left, int32 top, int32 w, style::align align, int32 lines, int32 yFrom, int32 yTo, int32 removeFromEnd) {
@@ -1029,19 +1053,23 @@ public:
 	}
 
 	const TextLinkPtr &link(int32 x, int32 y, int32 w, style::align align) {
+#if 0
 		_lnkX = x;
+#endif
 		_lnkY = y;
 		_lnkResult = &_zeroLnk;
+#if 0
 		if (_lnkX >= 0 && _lnkX < w && _lnkY >= 0) {
 			draw(0, 0, w, align, _lnkY, _lnkY + 1);
 		}
+#endif
 		return *_lnkResult;
 	}
 
 	void getState(TextLinkPtr &lnk, bool &inText, int32 x, int32 y, int32 w, style::align align) {
 		lnk = TextLinkPtr();
 		inText = false;
-
+#if 0
 		if (x >= 0 && x < w && y >= 0) {
 			_lnkX = x;
 			_lnkY = y;
@@ -1050,13 +1078,14 @@ public:
 			draw(0, 0, w, align, _lnkY, _lnkY + 1);
 			lnk = *_lnkResult;
 		}
+#endif
 	}
 
 	void getSymbol(uint16 &symbol, bool &after, bool &upon, int32 x, int32 y, int32 w, style::align align) {
 		symbol = 0;
 		after = false;
 		upon = false;
-
+#if 0
 		if (y >= 0) {
 			_lnkX = x;
 			_lnkY = y;
@@ -1065,6 +1094,7 @@ public:
 			_getSymbolUpon = &upon;
 			draw(0, 0, w, align, _lnkY, _lnkY + 1);
 		}
+#endif
 	}
 
 	const QPen &blockPen(ITextBlock *block) {
@@ -1090,7 +1120,7 @@ public:
 
 		ITextBlock *_endBlock = (_endBlockIter == _end) ? 0 : (*_endBlockIter);
 		bool elidedLine = _elideLast && _endBlock && (_y + _lineHeight >= _yTo);
-
+#if 0
 		QFixed x = _x;
 		if (_align & Qt::AlignHCenter) {
 			x += (_wLeft / 2).toInt();
@@ -1123,10 +1153,11 @@ public:
 				return false;
 			}
 		}
+#endif
 
 		bool selectFromStart = (_selectedTo > _lineStart) && (_lineStart > 0) && (_selectedFrom <= _lineStart);
 		bool selectTillEnd = (_selectedTo >= _lineEnd) && (_lineEnd < _t->_text.size()) && (_selectedFrom < _lineEnd) && (!_endBlock || _endBlock->type() != TextBlockSkip);
-
+#if 0
 		if ((selectFromStart && _parDirection == Qt::LeftToRight) || (selectTillEnd && _parDirection == Qt::RightToLeft)) {
 			if (x > _x) {
 				_p->fillRect(QRectF(_x.toReal(), _y + _yDelta, (x - _x).toReal(), _fontHeight), _textStyle->selectBg->b);
@@ -1137,7 +1168,7 @@ public:
 				_p->fillRect(QRectF((x + _w - _wLeft).toReal(), _y + _yDelta, (_x + _wLeft - x).toReal(), _fontHeight), _textStyle->selectBg->b);
 			}
 		}
-
+#endif
 		/* // lpadding is counted to _wLeft
 		for (; _lineStart < _lineEnd; ++_lineStart) {
 			if (_t->_text.at(_lineStart) != QChar::Space) {
@@ -1166,7 +1197,7 @@ public:
 		int32 lineStart = delta, lineLength = _lineEnd - _lineStart;
 
 		if (elidedLine) prepareElidedLine(lineText, lineStart, lineLength, _endBlock);
-
+#if 0
 		_f = _t->_font;
 		QStackTextEngine engine(lineText, _f->f);
 		engine.option.setTextDirection(_parDirection);
@@ -1434,20 +1465,23 @@ public:
 
 			x += itemWidth;
 		}
-
+#endif
 		if (elidedLine) restoreAfterElided();
 		return true;
 	}
 
 	void elideSaveBlock(int32 blockIndex, ITextBlock *&_endBlock, int32 elideStart, int32 elideWidth) {
+#if 0
 		_elideSavedIndex = blockIndex;
 		_elideSavedBlock = _t->_blocks[blockIndex];
 		const_cast<Text*>(_t)->_blocks[blockIndex] = new TextBlock(_t->_font, _t->_text, QFIXED_MAX, elideStart, 0, _elideSavedBlock->flags(), _elideSavedBlock->color(), _elideSavedBlock->lnkIndex());
 		_blocksSize = blockIndex + 1;
 		_endBlock = (blockIndex + 1 < _t->_blocks.size() ? _t->_blocks[blockIndex + 1] : 0);
+#endif
 	}
 
 	void setElideBidi(int32 elideStart, int32 elideLen) {
+#if 0
 		int32 newParLength = elideStart + elideLen - _parStart;
 		if (newParLength > _parAnalysis.size()) {
 			_parAnalysis.resize(newParLength);
@@ -1455,11 +1489,12 @@ public:
 		for (int32 i = elideLen; i > 0; --i) {
 			_parAnalysis[newParLength - i].bidiLevel = (_parDirection == Qt::RightToLeft) ? 1 : 0;
 		}
+#endif
 	}
 
 	void prepareElidedLine(QString &lineText, int32 lineStart, int32 &lineLength, ITextBlock *&_endBlock, int repeat = 0) {
 		static const QString _Elide = qsl("...");
-
+#if 0
 		_f = _t->_font;
 		QStackTextEngine engine(lineText, _f->f);
 		engine.option.setTextDirection(_parDirection);
@@ -1560,6 +1595,7 @@ public:
 				elideSaveBlock(blockIndex, _endBlock, elideStart, elideWidth);
 			}
 		}
+#endif
 	}
 
 	void restoreAfterElided() {
@@ -1570,6 +1606,7 @@ public:
 		}
 	}
 
+#if 0
 	// COPIED FROM qtextengine.cpp AND MODIFIED
 	void eShapeLine(const QScriptLine &line) {
 		int item = _e->findItem(line.from), end = _e->findItem(line.from + line.length - 1);
@@ -1590,7 +1627,7 @@ public:
 			_e->shape(item);
 		}
 	}
-
+#endif
 	void eSetFont(ITextBlock *block) {
 		style::font newFont = _t->_font;
 		int flags = block->flags();
@@ -1611,12 +1648,15 @@ public:
 		if (flags & TextBlockUnderline) newFont = newFont->underline();
 		if (newFont != _f) {
 			_f = newFont;
+#if 0
 			_e->fnt = _f->f;
 			_e->resetFontEngineCache();
+#endif
 		}
 	}
 
 	void eItemize() {
+#if 0
 		_e->validate();
 		if (_e->layoutData->items.size())
 			return;
@@ -1706,8 +1746,9 @@ public:
 			}
 			i_items->append(QScriptItem(start, i_analysis[start]));
 		}
+#endif
 	}
-
+#if 0
 	QChar::Direction eSkipBoundryNeutrals(QScriptAnalysis *analysis,
 											const ushort *unicode,
 											int &sor, int &eor, BidiControl &control,
@@ -2160,6 +2201,7 @@ public:
 
 		return hasBidi;
 	}
+#endif
 
 private:
 
@@ -2178,12 +2220,15 @@ private:
 	Qt::LayoutDirection _parDirection;
 	int32 _parStart, _parLength;
 	bool _parHasBidi;
+#if 0
 	QVarLengthArray<QScriptAnalysis, 4096> _parAnalysis;
-
+#endif
 	// current line data
 	QTextEngine *_e;
 	style::font _f;
+#if 0
 	QFixed _x, _w, _wLeft;
+#endif
 	int32 _y, _yDelta, _lineHeight, _fontHeight;
 	
 	// elided hack support
@@ -2194,8 +2239,10 @@ private:
 	int32 _lineStart, _localFrom;
 	int32 _lineStartBlock;
 
+#if 0
 	// link and symbol resolve
 	QFixed _lnkX;
+#endif
 	int32 _lnkY;
 	const TextLinkPtr *_lnkResult;
 	bool *_inTextFlag;
@@ -2218,9 +2265,14 @@ const TextParseOptions _textPlainOptions = {
 	Qt::LayoutDirectionAuto, // dir
 };
 
-Text::Text(int32 minResizeWidth) : _minResizeWidth(minResizeWidth), _maxWidth(0), _minHeight(0), _startDir(Qt::LayoutDirectionAuto) {
-}
+Text::Text(int32 minResizeWidth)
+#if 0
+    : _minResizeWidth(minResizeWidth), _maxWidth(0), _minHeight(0), _startDir(Qt::LayoutDirectionAuto)
+#endif
+{
 
+}
+#if 0
 Text::Text(style::font font, const QString &text, const TextParseOptions &options, int32 minResizeWidth, bool richText) : _minResizeWidth(minResizeWidth) {
 	if (richText) {
 		setRichText(font, text, options);
@@ -2228,8 +2280,10 @@ Text::Text(style::font font, const QString &text, const TextParseOptions &option
 		setText(font, text, options);
 	}
 }
-
-Text::Text(const Text &other) :
+#endif
+Text::Text(const Text &other)
+#if 0
+    :
 _minResizeWidth(other._minResizeWidth), _maxWidth(other._maxWidth),
 _minHeight(other._minHeight),
 _text(other._text),
@@ -2237,6 +2291,7 @@ _font(other._font),
 _blocks(other._blocks.size()),
 _links(other._links),
 _startDir(other._startDir)
+#endif
 {
 	for (int32 i = 0, l = _blocks.size(); i < l; ++i) {
 		_blocks[i] = other._blocks.at(i)->clone();
@@ -2244,6 +2299,7 @@ _startDir(other._startDir)
 }
 
 Text &Text::operator=(const Text &other) {
+#if 0
 	_minResizeWidth = other._minResizeWidth;
 	_maxWidth = other._maxWidth;
 	_minHeight = other._minHeight;
@@ -2255,6 +2311,7 @@ Text &Text::operator=(const Text &other) {
 	for (int32 i = 0, l = _blocks.size(); i < l; ++i) {
 		_blocks[i] = other._blocks.at(i)->clone();
 	}
+#endif
 	return *this;
 }
 
@@ -2270,6 +2327,7 @@ void Text::setText(style::font font, const QString &text, const TextParseOptions
 
 	int32 lineHeight = 0;
 	int32 result = 0, lastNewlineStart = 0;
+#if 0
 	QFixed _width = 0, last_rBearing = 0, last_rPadding = 0;
 	for (TextBlocks::const_iterator i = _blocks.cbegin(), e = _blocks.cend(); i != e; ++i) {
 		ITextBlock *b = *i;
@@ -2326,6 +2384,7 @@ void Text::setText(style::font font, const QString &text, const TextParseOptions
 			_maxWidth = _width;
 		}
 	}
+#endif
 }
 
 void Text::setRichText(style::font font, const QString &text, TextParseOptions options, const TextCustomTagsMap &custom) {
@@ -2416,6 +2475,7 @@ bool Text::hasLinks() const {
 }
 
 int32 Text::countHeight(int32 w) const {
+#if 0
 	QFixed width = w;
 	if (width < _minResizeWidth) width = _minResizeWidth;
 	if (width >= _maxWidth) {
@@ -2515,8 +2575,9 @@ int32 Text::countHeight(int32 w) const {
 	if (widthLeft < width) {
 		result += lineHeight;
 	}
-
 	return result;
+#endif
+    return 0;
 }
 
 void Text::replaceFont(style::font f) {
@@ -2641,7 +2702,9 @@ void Text::clean() {
 	}
 	_blocks.clear();
 	_links.clear();
+#if 0
 	_maxWidth = _minHeight = 0;
+#endif
 	_startDir = Qt::LayoutDirectionAuto;
 }
 
@@ -2649,11 +2712,17 @@ void Text::clean() {
 namespace {
 
 	struct ScriptLine {
-        ScriptLine() : length(0), textWidth(0) {
+        ScriptLine() : length(0)
+#if 0
+          , textWidth(0)
+#endif
+        {
         }
 
 		int32 length;
+#if 0
 		QFixed textWidth;
+#endif
 	};
 
     struct LineBreakHelper
@@ -2666,19 +2735,20 @@ namespace {
 
         ScriptLine tmpData;
         ScriptLine spaceData;
-
+#if 0
         QGlyphLayout glyphs;
-
+#endif
         int glyphCount;
         int maxGlyphs;
         int currentPosition;
+#if 0
         glyph_t previousGlyph;
 
         QFixed rightBearing;
-
+#endif
         QFontEngine *fontEngine;
         const unsigned short *logClusters;
-
+#if 0
         inline glyph_t currentGlyph() const
         {
             Q_ASSERT(currentPosition > 0);
@@ -2715,9 +2785,10 @@ namespace {
             if (previousGlyph > 0)
                 adjustRightBearing(previousGlyph);
         }
-
+#endif
     };
 
+#if 0
 	static inline void addNextCluster(int &pos, int end, ScriptLine &line, int &glyphCount,
 									  const QScriptItem &current, const unsigned short *logClusters,
 									  const QGlyphLayout &glyphs)
@@ -2737,12 +2808,12 @@ namespace {
 
 		++glyphCount;
 	}
-
+#endif
 } // anonymous namespace
 
 class BlockParser {
 public:
-
+#if 0
 	BlockParser(QTextEngine *e, TextBlock *b, QFixed minResizeWidth, int32 blockFrom) : block(b), eng(e) {
 		parseWords(minResizeWidth, blockFrom);
 	}
@@ -2872,9 +2943,10 @@ private:
 
 	TextBlock *block;
 	QTextEngine *eng;
-
+#endif
 };
 
+#if 0
 TextBlock::TextBlock(const style::font &font, const QString &str, QFixed minResizeWidth, uint16 from, uint16 length, uchar flags, const style::color &color, uint16 lnkIndex) : ITextBlock(font, str, from, length, flags, color, lnkIndex) {
 	_flags |= ((TextBlockText & 0x0F) << 8);
 	if (length) {
@@ -2898,15 +2970,20 @@ TextBlock::TextBlock(const style::font &font, const QString &str, QFixed minResi
 		layout.endLayout();
 	}
 }
-
-EmojiBlock::EmojiBlock(const style::font &font, const QString &str, uint16 from, uint16 length, uchar flags, const style::color &color, uint16 lnkIndex, const EmojiData *emoji) : ITextBlock(font, str, from, length, flags, color, lnkIndex), emoji(emoji) {
+#endif
+EmojiBlock::EmojiBlock(const style::font &font, const QString &str, uint16 from, uint16 length, uchar flags, const style::color &color, uint16 lnkIndex, const EmojiData *emoji) : ITextBlock(font, str, from, length, flags, color, lnkIndex), emoji(emoji)
+{
+#if 0
 	_flags |= ((TextBlockEmoji & 0x0F) << 8);
 	_width = int(st::emojiSize + 2 * st::emojiPadding);
+#endif
 }
 
 SkipBlock::SkipBlock(const style::font &font, const QString &str, uint16 from, int32 w, int32 h, uint16 lnkIndex) : ITextBlock(font, str, from, 1, 0, style::color(), lnkIndex), _height(h) {
+#if 0
 	_flags |= ((TextBlockSkip & 0x0F) << 8);
 	_width = w;
+#endif
 }
 
 namespace {

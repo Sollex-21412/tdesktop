@@ -741,7 +741,9 @@ namespace MTP {
 			bool wasMain = (i.value() == mainSession);
 
 			i.value()->kill();
+#if 0
 			if (sessionsToKill.isEmpty()) QTimer::singleShot(0, killSessionsDelayed);
+#endif
 			sessionsToKill.push_back(i.value());
 			sessions.erase(i);
 

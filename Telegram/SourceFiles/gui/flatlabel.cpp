@@ -30,7 +30,9 @@ namespace {
 
 FlatLabel::FlatLabel(QWidget *parent, const QString &text, const style::flatLabel &st, const style::textStyle &tst) : TWidget(parent),
 _text(st.width ? st.width : QFIXED_MAX), _st(st), _tst(tst), _opacity(1) {
+#if 0
 	setRichText(text);
+#endif
 }
 
 void FlatLabel::setText(const QString &text) {

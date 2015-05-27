@@ -301,7 +301,6 @@ INCLUDEPATH += "/usr/include/dee-1.0"
 INCLUDEPATH += "/usr/include/libdbusmenu-glib-0.4"
 
 LIBS += -lcrypto -lssl -lz -ldl -llzma -lexif -lopus -lopusfile -logg -lopenal
-LIBS += ./../../../Libraries/QtStatic/qtbase/plugins/platforminputcontexts/libcomposeplatforminputcontextplugin.a
 
 RESOURCES += \
     ./SourceFiles/telegram.qrc \

@@ -5661,7 +5661,9 @@ HistoryServiceMsg::HistoryServiceMsg(History *history, HistoryBlock *block, cons
 
 HistoryServiceMsg::HistoryServiceMsg(History *history, HistoryBlock *block, MsgId msgId, QDateTime date, const QString &msg, int32 flags, HistoryMedia *media) :
 	HistoryItem(history, block, msgId, flags, date, 0)
+#if 0
 , _text(st::msgServiceFont, msg, _historySrvOptions, st::dlgMinWidth)
+#endif
 , _media(media)
 {
 }

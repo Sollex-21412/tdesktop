@@ -96,7 +96,9 @@ void StickerSetInner::installDone(const MTPBool &result) {
 	StickerSets::iterator custom = sets.find(CustomStickerSetId);
 	if (custom != sets.cend()) {
 		for (int32 i = 0, l = _pack.size(); i < l; ++i) {
+#if 0
 			custom->stickers.removeOne(_pack.at(i));
+#endif
 		}
 		if (custom->stickers.isEmpty()) {
 			sets.erase(custom);

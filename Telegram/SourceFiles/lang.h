@@ -73,7 +73,7 @@ public:
 
 LangString langCounted(ushort key0, ushort tag, float64 value);
 
-#include "lang_auto.h"
+#include "GeneratedFiles/lang_auto.h"
 
 const char *langKeyName(LangKey key);
 

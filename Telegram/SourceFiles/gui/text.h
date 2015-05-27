@@ -51,7 +51,9 @@ LinkRanges textParseLinks(const QString &text, int32 flags, bool rich = false);
 
 void emojiDraw(QPainter &p, EmojiPtr e, int x, int y);
 
+#if 0
 #include "../../../QtStatic/qtbase/src/gui/text/qfontengine_p.h"
+#endif
 
 enum TextBlockType {
 	TextBlockNewline = 0x01,
@@ -69,20 +71,27 @@ enum TextBlockFlags {
 class ITextBlock {
 public:
 
-	ITextBlock(const style::font &font, const QString &str, uint16 from, uint16 length, uchar flags, const style::color &color, uint16 lnkIndex) : _from(from), _flags((flags & 0xFF) | ((lnkIndex & 0xFFFF) << 12))/*, _color(color)*/, _lpadding(0) {
+    ITextBlock(const style::font &font, const QString &str, uint16 from, uint16 length, uchar flags, const style::color &color, uint16 lnkIndex)
+#if 0
+        : _from(from), _flags((flags & 0xFF) | ((lnkIndex & 0xFFFF) << 12))/*, _color(color)*/, _lpadding(0)
+#endif
+    {
 		if (length) {
+#if 0
 			if (str.at(_from + length - 1).unicode() == QChar::Space) {
 				_rpadding = font->spacew;
 			}
 			if (length > 1 && str.at(0).unicode() == QChar::Space) {
 				_lpadding = font->spacew;
 			}
+#endif
 		}
 	}
 
 	uint16 from() const {
 		return _from;
 	}
+#if 0
 	int32 width() const {
 		return _width.toInt();
 	}
@@ -101,7 +110,7 @@ public:
 	QFixed f_rpadding() const {
 		return _rpadding;
 	}
-
+#endif
 	uint16 lnkIndex() const {
 		return (_flags >> 12) & 0xFFFF;
 	}
@@ -129,9 +138,9 @@ protected:
 	uint16 _from;
 
 	uint32 _flags; // 4 bits empty, 16 bits lnkIndex, 4 bits type, 8 bits flags
-
+#if 0
 	QFixed _width, _lpadding, _rpadding;
-
+#endif
 };
 
 class NewlineBlock : public ITextBlock {
@@ -162,6 +171,7 @@ private:
 struct TextWord {
 	TextWord() {
 	}
+#if 0
 	TextWord(uint16 from, QFixed width, QFixed rbearing, QFixed rpadding = 0) : from(from),
 		_rbearing(rbearing.value() > 0x7FFF ? 0x7FFF : (rbearing.value() < -0x7FFF ? -0x7FFF : rbearing.value())), width(width), rpadding(rpadding) {
 	}
@@ -171,23 +181,24 @@ struct TextWord {
 	uint16 from;
 	int16 _rbearing;
 	QFixed width, rpadding;
+#endif
 };
 
 class TextBlock : public ITextBlock {
 public:
-
+#if 0
 	QFixed f_rbearing() const {
 		return _words.isEmpty() ? 0 : _words.back().f_rbearing();
 	}
-
+#endif
 	ITextBlock *clone() const {
 		return new TextBlock(*this);
 	}
 
 private:
-
+#if 0
 	TextBlock(const style::font &font, const QString &str, QFixed minResizeWidth, uint16 from, uint16 length, uchar flags, const style::color &color, uint16 lnkIndex);
-
+#endif
 	typedef QVector<TextWord> TextWords;
 	TextWords _words;
 
@@ -423,9 +434,13 @@ typedef QMap<QChar, TextCustomTag> TextCustomTagsMap;
 class Text {
 public:
 
+#define QFIXED_MAX 1
+
 	Text(int32 minResizeWidth = QFIXED_MAX);
+#if 0
 	Text(style::font font, const QString &text, const TextParseOptions &options = _defaultOptions, int32 minResizeWidth = QFIXED_MAX, bool richText = false);
-	Text(const Text &other);
+#endif
+    Text(const Text &other);
 	Text &operator=(const Text &other);
 
 	int32 countHeight(int32 width) const;
@@ -440,8 +455,13 @@ public:
 	}
 
 	int32 maxWidth() const {
+#if 0
 		return _maxWidth.ceil().toInt();
+#else
+        return 0;
+#endif
 	}
+
 	int32 minHeight() const {
 		return _minHeight;
 	}
@@ -486,8 +506,9 @@ public:
 	}
 
 private:
-
+#if 0
 	QFixed _minResizeWidth, _maxWidth;
+#endif
 	int32 _minHeight;
 
 	QString _text;
