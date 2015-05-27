@@ -278,10 +278,7 @@ CONFIG(release, debug|release) {
     QMAKE_LFLAGS_RELEASE += -Ofast -flto
 }
 
-INCLUDEPATH += ./../../Libraries/QtStatic/qtbase/include/QtGui/5.4.0/QtGui\
-               ./../../Libraries/QtStatic/qtbase/include/QtCore/5.4.0/QtCore\
-               ./../../Libraries/QtStatic/qtbase/include\
-               /usr/local/include/opus\
+INCLUDEPATH += /usr/local/include/opus\
                ./SourceFiles\
                ./GeneratedFiles
 
